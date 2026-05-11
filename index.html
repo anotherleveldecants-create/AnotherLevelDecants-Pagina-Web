@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AnotherLevelDecants: Perfumes de lujo en formato decant desde 4,50€. Decants artesanales de 5ml y 10ml. Envío a toda España." />
+  <meta name="keywords" content="perfumes decant, decants artesanales, perfumes de lujo, 5ml, 10ml, España" />
+  <meta name="author" content="AnotherLevelDecants" />
+  <meta name="theme-color" content="#c9a96e" />
+  <meta property="og:title" content="AnotherLevelDecants — Perfumes de Lujo en Formato Decant" />
+  <meta property="og:description" content="Fragancias premium en formato decant. Desde 4,50€. Prueba antes de invertir." />
+  <meta property="og:type" content="website" />
+  <title>AnotherLevelDecants — Perfumes Decant Artesanales</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles/main.css" />
+</head>
+<body>
+
+<header id="header" class="header">
+  <a class="logo" href="#" aria-label="AnotherLevelDecants">Another<span>Level</span>Decants</a>
+  <nav>
+    <a href="#catalogo">Catálogo</a>
+    <a href="#packs">Packs</a>
+  </nav>
+  <button class="cart-btn" id="cart-btn" aria-label="Abrir carrito de compra">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    Cesta <span class="cart-count" id="cart-count">0</span>
+  </button>
+</header>
+
+<section class="hero">
+  <span class="hero-tag">✦ Decants artesanales · 5 ml y 10 ml ✦</span>
+  <h1>El perfume que<br>siempre quisiste,<br><em>al alcance de todos</em></h1>
+  <p>Fragancias de lujo en formato decant, desde 4,50 €. Prueba antes de invertir.</p>
+  <div class="hero-pills">
+    <span class="hero-pill"><span>◈</span> Desde 4,50 €</span>
+    <span class="hero-pill"><span>◈</span> Bizum · WhatsApp</span>
+    <span class="hero-pill"><span>◈</span> Envío a toda España</span>
+  </div>
+</section>
+
+<div class="section-heading" id="catalogo">
+  <h2>Catálogo</h2>
+  <p>Elige tu formato: 5 ml para descubrir, 10 ml para quedarte.</p>
+  <div class="section-divider"></div>
+</div>
+
+<div class="filters" id="filters"></div>
+<div class="search-bar">
+  <input type="text" class="search-input" id="search-input" placeholder="Buscar por marca o nombre..." aria-label="Buscador de perfumes" />
+  <span id="search-results" class="search-results"></span>
+</div>
+
+<section class="catalog" id="catalog-grid" role="grid" aria-label="Catálogo de perfumes"></section>
+<div class="pagination" id="pagination" role="navigation" aria-label="Paginación del catálogo"></div>
+
+<section class="packs-section" id="packs">
+  <div class="section-heading">
+    <h2>Packs Curados</h2>
+    <p>Combinaciones seleccionadas. Más perfume, mejor precio.</p>
+    <div class="section-divider"></div>
+  </div>
+  <div class="packs-grid" id="packs-grid"></div>
+</section>
+
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart-panel" id="cart-panel">
+  <div class="cart-header">
+    <span class="cart-title">Tu cesta</span>
+    <button class="close-btn" id="close-cart-btn" aria-label="Cerrar carrito">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-subtotal">
+      <span class="cart-subtotal-label">Total</span>
+      <span class="cart-subtotal-val" id="cart-total">0,00 €</span>
+    </div>
+    <p class="cart-note">El pago se realiza por <strong>Bizum</strong>. Al confirmar, te enviamos los datos por WhatsApp.</p>
+    <a class="whatsapp-btn" id="whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer" aria-label="Finalizar pedido por WhatsApp">
+      <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 .5C7.44.5.5 7.44.5 16c0 2.83.74 5.48 2.03 7.78L.5 31.5l7.93-2.08A15.44 15.44 0 0 0 16 31.5c8.56 0 15.5-6.94 15.5-15.5S24.56.5 16 .5zm0 28.1a12.56 12.56 0 0 1-6.4-1.74l-.46-.27-4.7 1.23 1.26-4.6-.3-.48A12.55 12.55 0 0 1 3.4 16C3.4 9.05 9.05 3.4 16 3.4c6.95 0 12.6 5.65 12.6 12.6 0 6.95-5.65 12.6-12.6 12.6zm6.89-9.43c-.38-.19-2.23-1.1-2.58-1.23-.35-.12-.6-.19-.85.19-.25.38-.96 1.23-1.18 1.48-.22.25-.43.28-.81.09-.38-.19-1.6-.59-3.05-1.88-1.13-1-1.89-2.23-2.11-2.61-.22-.38-.02-.58.16-.77.17-.17.38-.43.57-.65.19-.22.25-.38.38-.63.12-.25.06-.47-.03-.65-.1-.19-.85-2.05-1.17-2.81-.31-.74-.62-.64-.85-.65h-.72c-.25 0-.65.09-.99.47-.35.38-1.32 1.29-1.32 3.14s1.35 3.64 1.54 3.89c.19.25 2.66 4.06 6.44 5.69.9.39 1.6.62 2.15.79.9.29 1.72.25 2.37.15.72-.11 2.23-.91 2.55-1.79.31-.88.31-1.63.22-1.79-.1-.16-.35-.25-.73-.44z"/></svg>
+      Finalizar pedido por WhatsApp
+    </a>
+  </div>
+</aside>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <h4>Sobre nosotros</h4>
+      <p>Decants artesanales de perfumes de lujo. Prueba antes de invertir en una botella completa.</p>
+    </div>
+    <div>
+      <h4>Información</h4>
+      <ul>
+        <li><a href="faq.html">Preguntas frecuentes</a></li>
+        <li><a href="envios.html">Envíos y devoluciones</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="aviso-legal.html">Aviso legal</a></li>
+        <li><a href="privacidad.html">Política de privacidad</a></li>
+        <li><a href="cookies.html">Política de cookies</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-divider">
+    <p>AnotherLevelDecants · Decants artesanales de 5 y 10 ml · Pago por Bizum · Envío a toda España</p>
+    <p style="margin-top:.5rem">Hecho con amor por un perfumista apasionado ✦</p>
+    <p style="margin-top:.5rem; font-size:0.7rem;">&copy; 2026 AnotherLevelDecants. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
