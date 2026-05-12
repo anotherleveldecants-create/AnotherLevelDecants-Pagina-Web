@@ -148,25 +148,25 @@ function setupEventListeners() {
       cartManager.addItem(perfume, size)
       const item = cartManager.items.get(key)
       
-      // Conversión inteligente con múltiplos: cada 3x 5ml → 1x 10ml + 1x 5ml
+      // Conversión inteligente: cada 2x 5ml → 1x 10ml
       if (size === 5) {
         const qty = item.qty
-        const conversiones = Math.floor(qty / 3) // Cuántas veces cabe 3
-        const restante = qty % 3 // Qué sobra
+        const qty10ml = Math.floor(qty / 2)  // Cuántos 10ml
+        const qty5ml = qty % 2                 // Cuántos 5ml sobran
         
-        if (conversiones > 0 || restante !== qty) {
+        if (qty10ml > 0 || qty5ml !== qty) {
           cartManager.removeItem(key)
           
-          // Añadir el equivalente en 10ml
-          if (conversiones > 0) {
+          // Añadir los 10ml
+          if (qty10ml > 0) {
             productManager.setSelectedSize(perfId, 10)
-            cartManager.addItem(perfume, 10, conversiones)
+            cartManager.addItem(perfume, 10, qty10ml)
           }
           
-          // Añadir el restante en 5ml
-          if (restante > 0) {
+          // Añadir los 5ml restantes
+          if (qty5ml > 0) {
             productManager.setSelectedSize(perfId, 5)
-            cartManager.addItem(perfume, 5, restante)
+            cartManager.addItem(perfume, 5, qty5ml)
           }
         }
       }
