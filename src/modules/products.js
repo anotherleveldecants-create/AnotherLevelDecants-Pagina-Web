@@ -8,15 +8,17 @@ export class ProductManager {
     this.currentFilter = 'todos'
     this.currentSearchTerm = ''
     this.selectedSizes = new Map()
+    this.qty5mlClicks = new Map() // Contador de clicks en 5ml
   }
 
   async loadData() {
     this.perfumes = await fetchData('/data/perfumes.json')
     this.packs = await fetchData('/data/packs.json')
     
-    // Inicializar tamaños seleccionados
+    // Inicializar tamaños seleccionados y contadores
     this.perfumes.forEach(p => {
       this.selectedSizes.set(p.id, 5)
+      this.qty5mlClicks.set(p.id, 0)
     })
     
     this.updateFilteredList()

@@ -71,6 +71,12 @@ function setupEventListeners() {
       
       productManager.setSelectedSize(perfId, size)
       
+      // Si cambias A 5ml: resetear contador
+      // Si cambias A 10ml: no necesita resetear
+      if (size === 5) {
+        productManager.qty5mlClicks.set(perfId, 0)
+      }
+      
       // Actualizar UI del tamaño
       const selector = sizeOpt.closest('.size-selector')
       selector.querySelectorAll('.size-opt').forEach(btn => btn.classList.remove('selected'))
@@ -81,6 +87,8 @@ function setupEventListeners() {
       const price = size === 5 ? perfume.price5 : perfume.price10
       document.getElementById(`price-${perfId}`).textContent = formatPrice(price)
       document.getElementById(`ml-${perfId}`).textContent = size + ' ml · decant'
+      
+      updateProductCard(perfId)
     }
   })
 
@@ -88,15 +96,24 @@ function setupEventListeners() {
   function updateProductCard(perfId) {
     const perfume = productManager.getPerfumeById(perfId)
     const sz = productManager.getSelectedSize(perfId)
-    const key = `${perfId}-${sz}`
-    const cartItem = cartManager.items.get(key)
-    const qty = cartItem ? cartItem.qty : 0
+    
+    // Contar TOTAL de este producto en el carrito (ambos tamaños)
+    let totalQty = 0
+    const key5 = `${perfId}-5`
+    const key10 = `${perfId}-10`
+    
+    if (cartManager.items.has(key5)) {
+      totalQty += cartManager.items.get(key5).qty
+    }
+    if (cartManager.items.has(key10)) {
+      totalQty += cartManager.items.get(key10).qty
+    }
     
     const card = document.querySelector(`[data-perf-id="${perfId}"]`)?.closest('.card')
     if (!card) return
     
     const footer = card.querySelector('.card-footer')
-    if (qty === 0) {
+    if (totalQty === 0) {
       // Mostrar botón "Añadir"
       footer.innerHTML = `
         <div>
@@ -116,7 +133,7 @@ function setupEventListeners() {
         </div>
         <div class="qty-controls">
           <button class="qty-btn qty-minus" id="minus-${perfId}" data-perf-id="${perfId}">−</button>
-          <span class="qty-display">${qty}</span>
+          <span class="qty-display">${totalQty}</span>
           <button class="qty-btn qty-plus" id="plus-${perfId}" data-perf-id="${perfId}">+</button>
         </div>
       `
@@ -142,10 +159,35 @@ function setupEventListeners() {
     if (e.target.classList.contains('qty-plus')) {
       const perfId = parseInt(e.target.dataset.perfId)
       const perfume = productManager.getPerfumeById(perfId)
-      const size = productManager.getSelectedSize(perfId)
-      const key = `${perfId}-${size}`
+      const size = parseInt(productManager.getSelectedSize(perfId)) // Asegurar que es número
       
-      cartManager.addItem(perfume, size)
+      // SOLO SI ES 5ML: Convertir inteligentemente
+      if (size === 5) {
+        const currentClicks = productManager.qty5mlClicks.get(perfId) || 0
+        productManager.qty5mlClicks.set(perfId, currentClicks + 1)
+        
+        const totalClicks = productManager.qty5mlClicks.get(perfId)
+        const qty10ml = Math.floor(totalClicks / 2)
+        const qty5ml = totalClicks % 2
+        
+        // Limpiar carrito de este producto
+        const key5 = `${perfId}-5`
+        const key10 = `${perfId}-10`
+        if (cartManager.items.has(key5)) cartManager.removeItem(key5)
+        if (cartManager.items.has(key10)) cartManager.removeItem(key10)
+        
+        // Añadir la conversión
+        if (qty10ml > 0) {
+          cartManager.addItem(perfume, 10, qty10ml)
+        }
+        if (qty5ml > 0) {
+          cartManager.addItem(perfume, 5, qty5ml)
+        }
+      } else {
+        // Si es 10ml, sumar normalmente
+        cartManager.addItem(perfume, size)
+      }
+      
       updateProductCard(perfId)
       uiManager.renderCart()
     }
@@ -153,10 +195,39 @@ function setupEventListeners() {
     // Botones de - cantidad
     if (e.target.classList.contains('qty-minus')) {
       const perfId = parseInt(e.target.dataset.perfId)
+      const perfume = productManager.getPerfumeById(perfId)
       const size = productManager.getSelectedSize(perfId)
       const key = `${perfId}-${size}`
       
-      cartManager.changeQuantity(key, -1)
+      // SOLO SI ES 5ML: Decrementar contador de clicks
+      if (size === 5) {
+        const currentClicks = productManager.qty5mlClicks.get(perfId) || 0
+        if (currentClicks > 0) {
+          productManager.qty5mlClicks.set(perfId, currentClicks - 1)
+          
+          const totalClicks = productManager.qty5mlClicks.get(perfId)
+          const qty10ml = Math.floor(totalClicks / 2)
+          const qty5ml = totalClicks % 2
+          
+          // Limpiar carrito para este producto
+          const key5 = `${perfId}-5`
+          const key10 = `${perfId}-10`
+          if (cartManager.items.has(key5)) cartManager.removeItem(key5)
+          if (cartManager.items.has(key10)) cartManager.removeItem(key10)
+          
+          // Añadir la conversión calculada
+          if (qty10ml > 0) {
+            cartManager.addItem(perfume, 10, qty10ml)
+          }
+          if (qty5ml > 0) {
+            cartManager.addItem(perfume, 5, qty5ml)
+          }
+        }
+      } else {
+        // Si es 10ml, restar normalmente
+        cartManager.changeQuantity(key, -1)
+      }
+      
       updateProductCard(perfId)
       uiManager.renderCart()
     }
@@ -199,6 +270,18 @@ function setupEventListeners() {
     if (e.target.classList.contains('remove-btn')) {
       const key = e.target.dataset.key
       cartManager.removeItem(key)
+      
+      // Extraer perfId del key (formato: "perfId-size" o "pack-packId")
+      if (key.startsWith('pack-')) {
+        // Es un pack, no hacer nada especial
+      } else {
+        const perfId = parseInt(key.split('-')[0])
+        // Resetear contador de clicks para este producto
+        productManager.qty5mlClicks.set(perfId, 0)
+        // Actualizar la tarjeta
+        updateProductCard(perfId)
+      }
+      
       uiManager.renderCart()
     }
   })
