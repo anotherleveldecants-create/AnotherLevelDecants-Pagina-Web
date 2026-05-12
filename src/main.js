@@ -14,6 +14,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Cargar datos
   await productManager.loadData()
 
+  // Sincronizar qty5mlClicks con los items del carrito
+  // Para cada producto, si tiene 5ml en carrito, establecer qty5mlClicks basado en eso
+  for (const [key, item] of cartManager.items) {
+    const [perfId, size] = key.split('-')
+    const perfIdNum = parseInt(perfId)
+    if (size === '5') {
+      productManager.qty5mlClicks.set(perfIdNum, item.qty)
+    }
+  }
+
   // Renderizar UI
   uiManager.renderFilters()
   uiManager.renderCatalog(1)
