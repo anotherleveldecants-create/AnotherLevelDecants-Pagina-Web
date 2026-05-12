@@ -84,6 +84,45 @@ function setupEventListeners() {
     }
   })
 
+  // Actualizar solo una tarjeta sin re-renderizar todo
+  function updateProductCard(perfId) {
+    const perfume = productManager.getPerfumeById(perfId)
+    const sz = productManager.getSelectedSize(perfId)
+    const key = `${perfId}-${sz}`
+    const cartItem = cartManager.items.get(key)
+    const qty = cartItem ? cartItem.qty : 0
+    
+    const card = document.querySelector(`[data-perf-id="${perfId}"]`)?.closest('.card')
+    if (!card) return
+    
+    const footer = card.querySelector('.card-footer')
+    if (qty === 0) {
+      // Mostrar botón "Añadir"
+      footer.innerHTML = `
+        <div>
+          <span class="card-price" id="price-${perfId}">${formatPrice(perfume[sz === 5 ? 'price5' : 'price10'])}</span>
+          <span class="card-ml" id="ml-${perfId}">${sz} ml · decant</span>
+        </div>
+        <button class="add-btn" id="btn-${perfId}" data-perf-id="${perfId}">
+          + Añadir
+        </button>
+      `
+    } else {
+      // Mostrar controles de cantidad
+      footer.innerHTML = `
+        <div>
+          <span class="card-price" id="price-${perfId}">${formatPrice(perfume[sz === 5 ? 'price5' : 'price10'])}</span>
+          <span class="card-ml" id="ml-${perfId}">${sz} ml · decant</span>
+        </div>
+        <div class="qty-controls">
+          <button class="qty-btn qty-minus" id="minus-${perfId}" data-perf-id="${perfId}">−</button>
+          <span class="qty-display">${qty}</span>
+          <button class="qty-btn qty-plus" id="plus-${perfId}" data-perf-id="${perfId}">+</button>
+        </div>
+      `
+    }
+  }
+
   // Añadir productos al carrito
   document.getElementById('catalog-grid').addEventListener('click', (e) => {
     if (e.target.classList.contains('add-btn')) {
@@ -92,9 +131,7 @@ function setupEventListeners() {
       const size = productManager.getSelectedSize(perfId)
       
       cartManager.addItem(perfume, size)
-      
-      // Re-renderizar catálogo para mostrar controles de cantidad
-      uiManager.renderCatalog(uiManager.currentPage)
+      updateProductCard(perfId)
       uiManager.renderCart()
       
       // Mostrar notificación
@@ -109,16 +146,27 @@ function setupEventListeners() {
       const key = `${perfId}-${size}`
       
       cartManager.addItem(perfume, size)
-      
-      // Verificar si llegamos a 2 de 5ml y cambiar automáticamente a 10ml
       const item = cartManager.items.get(key)
+      
+      // Conversión inteligente: 2x 5ml → 1x 10ml
       if (size === 5 && item.qty === 2) {
-        productManager.setSelectedSize(perfId, 10)
         cartManager.removeItem(key)
+        productManager.setSelectedSize(perfId, 10)
         cartManager.addItem(perfume, 10, 1)
+        updateProductCard(perfId)
+      }
+      // Conversión inteligente: 3x 5ml → 1x 10ml + 1x 5ml
+      else if (size === 5 && item.qty === 3) {
+        cartManager.removeItem(key)
+        productManager.setSelectedSize(perfId, 10)
+        cartManager.addItem(perfume, 10, 1)
+        cartManager.addItem(perfume, 5, 1)
+        updateProductCard(perfId)
+      }
+      else {
+        updateProductCard(perfId)
       }
       
-      uiManager.renderCatalog(uiManager.currentPage)
       uiManager.renderCart()
     }
 
@@ -129,7 +177,7 @@ function setupEventListeners() {
       const key = `${perfId}-${size}`
       
       cartManager.changeQuantity(key, -1)
-      uiManager.renderCatalog(uiManager.currentPage)
+      updateProductCard(perfId)
       uiManager.renderCart()
     }
   })
