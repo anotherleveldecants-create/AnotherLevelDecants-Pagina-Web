@@ -1,6 +1,30 @@
 export class CartManager {
   constructor() {
     this.items = new Map()
+    this.loadFromStorage()
+  }
+
+  loadFromStorage() {
+    try {
+      const saved = localStorage.getItem('cart')
+      if (saved) {
+        const data = JSON.parse(saved)
+        data.forEach(item => {
+          this.items.set(item.key, item)
+        })
+      }
+    } catch (e) {
+      console.error('Error loading cart from storage:', e)
+    }
+  }
+
+  saveToStorage() {
+    try {
+      const data = Array.from(this.items.values())
+      localStorage.setItem('cart', JSON.stringify(data))
+    } catch (e) {
+      console.error('Error saving cart to storage:', e)
+    }
   }
 
   addItem(perfume, size, quantity = 1) {
@@ -22,6 +46,7 @@ export class CartManager {
         isPack: false
       })
     }
+    this.saveToStorage()
   }
 
   addPack(pack, packPrice, quantity = 1) {
@@ -46,10 +71,12 @@ export class CartManager {
         summary
       })
     }
+    this.saveToStorage()
   }
 
   removeItem(key) {
     this.items.delete(key)
+    this.saveToStorage()
   }
 
   changeQuantity(key, delta) {
@@ -60,6 +87,7 @@ export class CartManager {
         this.items.delete(key)
       }
     }
+    this.saveToStorage()
   }
 
   getTotal() {
@@ -88,6 +116,7 @@ export class CartManager {
 
   clear() {
     this.items.clear()
+    this.saveToStorage()
   }
 
   getCheckoutMessage(productManager) {
