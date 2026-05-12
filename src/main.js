@@ -97,23 +97,26 @@ function setupEventListeners() {
     const perfume = productManager.getPerfumeById(perfId)
     const sz = productManager.getSelectedSize(perfId)
     
-    // Contar TOTAL de este producto en el carrito (ambos tamaños)
-    let totalQty = 0
+    // Contar TOTAL en el carrito (10ml + 5ml)
     const key5 = `${perfId}-5`
     const key10 = `${perfId}-10`
     
+    let totalCount = 0
     if (cartManager.items.has(key5)) {
-      totalQty += cartManager.items.get(key5).qty
+      totalCount += cartManager.items.get(key5).qty
     }
     if (cartManager.items.has(key10)) {
-      totalQty += cartManager.items.get(key10).qty
+      totalCount += cartManager.items.get(key10).qty
     }
     
-    const card = document.querySelector(`[data-perf-id="${perfId}"]`)?.closest('.card')
-    if (!card) return
+    // Buscar la tarjeta por el selector de tamaño que tiene data-perf-id
+    const sizeSelector = document.querySelector(`.size-selector[data-perf-id="${perfId}"]`)
+    if (!sizeSelector) return
     
+    const card = sizeSelector.closest('.card')
     const footer = card.querySelector('.card-footer')
-    if (totalQty === 0) {
+    
+    if (totalCount === 0) {
       // Mostrar botón "Añadir"
       footer.innerHTML = `
         <div>
@@ -133,7 +136,7 @@ function setupEventListeners() {
         </div>
         <div class="qty-controls">
           <button class="qty-btn qty-minus" id="minus-${perfId}" data-perf-id="${perfId}">−</button>
-          <span class="qty-display">${totalQty}</span>
+          <span class="qty-display">${totalCount}</span>
           <button class="qty-btn qty-plus" id="plus-${perfId}" data-perf-id="${perfId}">+</button>
         </div>
       `
