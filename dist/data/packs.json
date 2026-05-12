@@ -1,0 +1,88 @@
+[
+  {
+    "id": "pack-noche",
+    "tag": "★ Bestseller · Noche",
+    "name": "Pack Noche Perfecta",
+    "desc": "Los dos reyes de la seducción nocturna. Para quien quiere arrasar en cualquier plan.",
+    "icon": "🌙",
+    "discount": 0.08,
+    "inStock": true,
+    "items": [
+      { "perfId": 2, "size": 10 },
+      { "perfId": 5, "size": 10 }
+    ]
+  },
+  {
+    "id": "pack-inicio",
+    "tag": "✦ Recomendado · Starter",
+    "name": "Pack Descubrimiento",
+    "desc": "Cuatro decants de 5 ml para explorar estilos distintos. El regalo ideal para quien empieza.",
+    "icon": "🧭",
+    "discount": 0.08,
+    "inStock": true,
+    "items": [
+      { "perfId": 4, "size": 5 },
+      { "perfId": 9, "size": 5 },
+      { "perfId": 8, "size": 5 },
+      { "perfId": 7, "size": 5 }
+    ]
+  },
+  {
+    "id": "pack-oriental",
+    "tag": "◈ Tendencia · Oriente",
+    "name": "Pack Oriente Misterioso",
+    "desc": "Lo mejor de la perfumería árabe. Gourmand, especiado y profundamente adictivo.",
+    "icon": "🕌",
+    "discount": 0.08,
+    "inStock": false,
+    "items": [
+      { "perfId": 8, "size": 10 },
+      { "perfId": 11, "size": 10 },
+      { "perfId": 12, "size": 5 }
+    ]
+  },
+  {
+    "id": "pack-lujo",
+    "tag": "♛ Premium · Top ventas",
+    "name": "Pack Alta Perfumería",
+    "desc": "Los decants más premium del catálogo. Firmas de lujo a precio de decant.",
+    "icon": "👑",
+    "discount": 0.08,
+    "inStock": true,
+    "items": [
+      { "perfId": 1, "size": 5 },
+      { "perfId": 2, "size": 5 },
+      { "perfId": 3, "size": 5 }
+    ]
+  },
+  {
+    "id": "pack-oficina",
+    "tag": "◇ Diario · Oficina",
+    "name": "Pack Profesional",
+    "desc": "Frescos, limpios y elegantes. Los compañeros perfectos para el día a día.",
+    "icon": "💼",
+    "discount": 0.08,
+    "inStock": true,
+    "items": [
+      { "perfId": 4, "size": 10 },
+      { "perfId": 13, "size": 10 }
+    ]
+  },
+  {
+    "id": "pack-regalo",
+    "tag": "✉ Regalo · Completo",
+    "name": "Pack Regalo Completo",
+    "desc": "Seis decants variados de 5 ml. La caja perfecta para sorprender a alguien especial.",
+    "icon": "🎁",
+    "discount": 0.08,
+    "inStock": true,
+    "items": [
+      { "perfId": 2, "size": 5 },
+      { "perfId": 5, "size": 5 },
+      { "perfId": 7, "size": 5 },
+      { "perfId": 8, "size": 5 },
+      { "perfId": 10, "size": 5 },
+      { "perfId": 12, "size": 5 }
+    ]
+  }
+]
