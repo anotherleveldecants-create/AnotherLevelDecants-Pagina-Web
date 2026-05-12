@@ -79,7 +79,7 @@
     "icon": "🤎",
     "image": "/images/products/6.jpg",
     "desc": "Vainilla premium y canela.",
-    "highlight": "Clon de alta gama de PDM Althair."
+    "highlight": "Clon de alta gama de PDM Althair.",
     "inStock": true,
     "stockLevel": "high"
   },
@@ -93,7 +93,7 @@
     "icon": "🌊",
     "image": "/images/products/7.jpg",
     "desc": "Cítricos de lujo y notas marinas.",
-    "highlight": "Frescor extremo y duradero."
+    "highlight": "Frescor extremo y duradero.",
     "inStock": true,
     "stockLevel": "high"
   },
@@ -107,7 +107,7 @@
     "icon": "☕",
     "image": "/images/products/8.jpg",
     "desc": "Café, dátiles, canela y praliné.",
-    "highlight": "Una joya árabe gourmand."
+    "highlight": "Una joya árabe gourmand.",
     "inStock": true,
     "stockLevel": "high"
   },
