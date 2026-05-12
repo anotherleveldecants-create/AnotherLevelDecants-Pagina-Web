@@ -38,6 +38,8 @@ export class UIManager {
         const cur = sz === 5 ? p.price5 : p.price10
         const key = `${p.id}-${sz}`
         const inCart = this.cartManager.items.has(key)
+        const cartItem = this.cartManager.items.get(key)
+        const qty = cartItem ? cartItem.qty : 0
 
         return `
         <div class="card" data-gender="${escapeHtml(p.gender)}" style="animation-delay:${i * 0.05}s">
@@ -50,23 +52,31 @@ export class UIManager {
             <p class="card-brand">${escapeHtml(p.brand)}</p>
             <h3 class="card-name">${escapeHtml(p.name)}</h3>
             <p class="card-desc">${escapeHtml(p.desc)} <em>${escapeHtml(p.highlight)}</em></p>
-            <div class="size-selector">
-              <button class="size-opt ${sz === 5 ? 'selected' : ''}" data-perf-id="${p.id}" data-size="5">
+            <div class="size-selector" data-perf-id="${p.id}">
+              <div class="size-opt ${sz === 5 ? 'selected' : ''}" data-perf-id="${p.id}" data-size="5">
                 5 ml<span class="size-price">${formatPrice(p.price5)}</span>
-              </button>
-              <button class="size-opt ${sz === 10 ? 'selected' : ''}" data-perf-id="${p.id}" data-size="10">
+              </div>
+              <div class="size-opt ${sz === 10 ? 'selected' : ''}" data-perf-id="${p.id}" data-size="10">
                 10 ml<span class="size-price">${formatPrice(p.price10)}</span>
                 <span class="size-save">Ahorras ${saving} €</span>
-              </button>
+              </div>
             </div>
             <div class="card-footer">
               <div>
                 <span class="card-price" id="price-${p.id}">${formatPrice(cur)}</span>
                 <span class="card-ml" id="ml-${p.id}">${sz} ml · decant</span>
               </div>
-              <button class="add-btn ${inCart ? 'added' : ''}" id="btn-${p.id}" data-perf-id="${p.id}">
-                ${inCart ? '✓ Añadido' : '+ Añadir'}
-              </button>
+              ${!inCart ? `
+                <button class="add-btn" id="btn-${p.id}" data-perf-id="${p.id}">
+                  + Añadir
+                </button>
+              ` : `
+                <div class="qty-controls">
+                  <button class="qty-btn qty-minus" id="minus-${p.id}" data-perf-id="${p.id}">−</button>
+                  <span class="qty-display">${qty}</span>
+                  <button class="qty-btn qty-plus" id="plus-${p.id}" data-perf-id="${p.id}">+</button>
+                </div>
+              `}
             </div>
           </div>
         </div>`

@@ -2,7 +2,7 @@ import { ProductManager } from './modules/products.js'
 import { CartManager } from './modules/cart.js'
 import { UIManager } from './modules/ui.js'
 import { CONFIG } from './config.js'
-import { smoothScroll } from './utils/helpers.js'
+import { smoothScroll, formatPrice } from './utils/helpers.js'
 
 // Inicializar managers
 const productManager = new ProductManager()
@@ -62,23 +62,24 @@ function setupEventListeners() {
     }
   })
 
-  // Tamaños de productos
+  // Tamaños de productos - clickear en cualquier parte para cambiar
   document.getElementById('catalog-grid').addEventListener('click', (e) => {
-    if (e.target.classList.contains('size-opt')) {
-      const perfId = parseInt(e.target.dataset.perfId)
-      const size = parseInt(e.target.dataset.size)
+    const sizeOpt = e.target.closest('.size-opt')
+    if (sizeOpt) {
+      const perfId = parseInt(sizeOpt.dataset.perfId)
+      const size = parseInt(sizeOpt.dataset.size)
       
       productManager.setSelectedSize(perfId, size)
       
       // Actualizar UI del tamaño
-      const selector = e.target.closest('.size-selector')
+      const selector = sizeOpt.closest('.size-selector')
       selector.querySelectorAll('.size-opt').forEach(btn => btn.classList.remove('selected'))
-      e.target.classList.add('selected')
+      sizeOpt.classList.add('selected')
       
       // Actualizar precio y ml
       const perfume = productManager.getPerfumeById(perfId)
       const price = size === 5 ? perfume.price5 : perfume.price10
-      document.getElementById(`price-${perfId}`).textContent = price.toFixed(2).replace('.', ',') + ' €'
+      document.getElementById(`price-${perfId}`).textContent = formatPrice(price)
       document.getElementById(`ml-${perfId}`).textContent = size + ' ml · decant'
     }
   })
@@ -91,14 +92,45 @@ function setupEventListeners() {
       const size = productManager.getSelectedSize(perfId)
       
       cartManager.addItem(perfume, size)
+      
+      // Re-renderizar catálogo para mostrar controles de cantidad
+      uiManager.renderCatalog(uiManager.currentPage)
       uiManager.renderCart()
       
-      // Feedback visual
-      e.target.classList.add('added')
-      e.target.textContent = '✓ Añadido'
-      
-      // Opcional: mostrar notificación
+      // Mostrar notificación
       showNotification(`${perfume.name} añadido a la cesta`)
+    }
+
+    // Botones de + cantidad
+    if (e.target.classList.contains('qty-plus')) {
+      const perfId = parseInt(e.target.dataset.perfId)
+      const perfume = productManager.getPerfumeById(perfId)
+      const size = productManager.getSelectedSize(perfId)
+      const key = `${perfId}-${size}`
+      
+      cartManager.addItem(perfume, size)
+      
+      // Verificar si llegamos a 2 de 5ml y cambiar automáticamente a 10ml
+      const item = cartManager.items.get(key)
+      if (size === 5 && item.qty === 2) {
+        productManager.setSelectedSize(perfId, 10)
+        cartManager.removeItem(key)
+        cartManager.addItem(perfume, 10, 1)
+      }
+      
+      uiManager.renderCatalog(uiManager.currentPage)
+      uiManager.renderCart()
+    }
+
+    // Botones de - cantidad
+    if (e.target.classList.contains('qty-minus')) {
+      const perfId = parseInt(e.target.dataset.perfId)
+      const size = productManager.getSelectedSize(perfId)
+      const key = `${perfId}-${size}`
+      
+      cartManager.changeQuantity(key, -1)
+      uiManager.renderCatalog(uiManager.currentPage)
+      uiManager.renderCart()
     }
   })
 
