@@ -148,22 +148,14 @@ function setupEventListeners() {
       cartManager.addItem(perfume, size)
       const item = cartManager.items.get(key)
       
-      // Conversión inteligente: 2x 5ml → 1x 10ml
-      if (size === 5 && item.qty === 2) {
-        cartManager.removeItem(key)
-        productManager.setSelectedSize(perfId, 10)
-        cartManager.addItem(perfume, 10, 1)
-        updateProductCard(perfId)
-      }
       // Conversión inteligente: 3x 5ml → 1x 10ml + 1x 5ml
-      else if (size === 5 && item.qty === 3) {
+      if (size === 5 && item.qty === 3) {
         cartManager.removeItem(key)
         productManager.setSelectedSize(perfId, 10)
         cartManager.addItem(perfume, 10, 1)
         cartManager.addItem(perfume, 5, 1)
         updateProductCard(perfId)
-      }
-      else {
+      } else {
         updateProductCard(perfId)
       }
       
