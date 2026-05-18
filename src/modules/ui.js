@@ -2,9 +2,10 @@ import { escapeHtml, formatPrice, smoothScroll } from '../utils/helpers.js'
 import { CONFIG } from '../config.js'
 
 export class UIManager {
-  constructor(productManager, cartManager) {
+  constructor(productManager, cartManager, customPackManager = null) {
     this.productManager = productManager
     this.cartManager = cartManager
+    this.customPackManager = customPackManager
     this.currentPage = 1
   }
 
@@ -21,6 +22,40 @@ export class UIManager {
     }).join('')
   }
 
+  renderSeasonFilters() {
+    const container = document.getElementById('season-filters')
+    const seasons = this.productManager.getAvailableSeasons()
+    
+    const seasonLabels = {
+      'todos': 'Todas',
+      'primavera': 'Primavera',
+      'verano': 'Verano',
+      'otoño': 'Otoño',
+      'invierno': 'Invierno'
+    }
+
+    container.innerHTML = seasons.map(season => {
+      const isActive = season === this.productManager.currentSeasonFilter
+      const label = seasonLabels[season] || season.charAt(0).toUpperCase() + season.slice(1)
+      return `<button class="filter-btn ${isActive ? 'active' : ''}" 
+              data-season="${season}" 
+              aria-label="Filtrar por estación ${label}">${label}</button>`
+    }).join('')
+  }
+
+  renderFamilyFilters() {
+    const container = document.getElementById('family-filters')
+    const families = this.productManager.getAvailableFamilies()
+    
+    container.innerHTML = families.map(family => {
+      const isActive = family === this.productManager.currentFamilyFilter
+      const label = family.charAt(0).toUpperCase() + family.slice(1)
+      return `<button class="filter-btn ${isActive ? 'active' : ''}" 
+              data-family="${family}" 
+              aria-label="Filtrar por familia ${label}">${label}</button>`
+    }).join('')
+  }
+
   renderCatalog(page = 1) {
     const container = document.getElementById('catalog-grid')
     const { items, total, totalPages } = this.productManager.getPaginatedPerfumes(page, CONFIG.ITEMS_PER_PAGE)
@@ -33,51 +68,16 @@ export class UIManager {
       </div>`
     } else {
       container.innerHTML = items.map((p, i) => {
-        const sz = this.productManager.getSelectedSize(p.id)
-        const saving = ((p.price5 * 2) - p.price10).toFixed(2).replace('.', ',')
-        const cur = sz === 5 ? p.price5 : p.price10
-        const key = `${p.id}-${sz}`
-        const inCart = this.cartManager.items.has(key)
-        const cartItem = this.cartManager.items.get(key)
-        const qty = cartItem ? cartItem.qty : 0
-
         return `
-        <div class="card" data-gender="${escapeHtml(p.gender)}" style="animation-delay:${i * 0.05}s">
+        <div class="card card-simple" data-perf-id="${p.id}" style="animation-delay:${i * 0.05}s; cursor: pointer;">
           <div class="card-visual">
             <img src="${p.image || '/images/placeholder.jpg'}" alt="${escapeHtml(p.name)}" class="card-image" onerror="this.style.display='none'" />
-            <span class="card-icon">${escapeHtml(p.icon)}</span>
             <span class="card-badge badge-${escapeHtml(p.gender)}">${escapeHtml(p.gender.charAt(0).toUpperCase() + p.gender.slice(1))}</span>
           </div>
-          <div class="card-body">
+          <div class="card-body card-body-simple">
             <p class="card-brand">${escapeHtml(p.brand)}</p>
             <h3 class="card-name">${escapeHtml(p.name)}</h3>
-            <p class="card-desc">${escapeHtml(p.desc)} <em>${escapeHtml(p.highlight)}</em></p>
-            <div class="size-selector" data-perf-id="${p.id}">
-              <div class="size-opt ${sz === 5 ? 'selected' : ''}" data-perf-id="${p.id}" data-size="5">
-                5 ml<span class="size-price">${formatPrice(p.price5)}</span>
-              </div>
-              <div class="size-opt ${sz === 10 ? 'selected' : ''}" data-perf-id="${p.id}" data-size="10">
-                10 ml<span class="size-price">${formatPrice(p.price10)}</span>
-                <span class="size-save">Ahorras ${saving} €</span>
-              </div>
-            </div>
-            <div class="card-footer">
-              <div>
-                <span class="card-price" id="price-${p.id}">${formatPrice(cur)}</span>
-                <span class="card-ml" id="ml-${p.id}">${sz} ml · decant</span>
-              </div>
-              ${!inCart ? `
-                <button class="add-btn" id="btn-${p.id}" data-perf-id="${p.id}">
-                  + Añadir
-                </button>
-              ` : `
-                <div class="qty-controls">
-                  <button class="qty-btn qty-minus" id="minus-${p.id}" data-perf-id="${p.id}">−</button>
-                  <span class="qty-display">${qty}</span>
-                  <button class="qty-btn qty-plus" id="plus-${p.id}" data-perf-id="${p.id}">+</button>
-                </div>
-              `}
-            </div>
+            <button class="info-btn" id="info-${p.id}" data-perf-id="${p.id}"> Ver Precios</button>
           </div>
         </div>`
       }).join('')
@@ -115,9 +115,12 @@ export class UIManager {
   renderPacks() {
     const container = document.getElementById('packs-grid')
     
-    container.innerHTML = this.productManager.packs.map((pack, i) => {
-      if (!pack.inStock) return ''
-      
+    const allPacks = [
+      ...this.productManager.packs.filter(p => p.inStock),
+      ...(this.customPackManager ? this.customPackManager.getAllPacks() : [])
+    ]
+
+    let html = allPacks.map((pack, i) => {
       const { full, discounted } = this.productManager.getPackPrice(pack)
       const saved = (full - discounted).toFixed(2).replace('.', ',')
 
@@ -132,14 +135,21 @@ export class UIManager {
       }).join('')
 
       const key = `pack-${pack.id}`
-      const inCart = this.cartManager.items.has(key)
+      const isCustom = pack.id.startsWith('custom-')
+      const customActions = isCustom ? `
+        <div class="custom-pack-actions">
+          <button class="edit-pack-btn" id="edit-${pack.id}" data-pack-id="${pack.id}" title="Editar">✎</button>
+          <button class="delete-pack-btn" id="delete-${pack.id}" data-pack-id="${pack.id}" title="Eliminar">✕</button>
+        </div>
+      ` : ''
 
       return `
-      <div class="pack-card" style="animation-delay:${i * 0.06}s">
+      <div class="pack-card ${isCustom ? 'custom-pack-card' : ''}" style="animation-delay:${i * 0.06}s">
         <div class="pack-header">
           <span class="pack-tag">${escapeHtml(pack.icon)} ${escapeHtml(pack.tag)}</span>
           <h3 class="pack-name">${escapeHtml(pack.name)}</h3>
           <p class="pack-desc">${escapeHtml(pack.desc)}</p>
+          ${customActions}
         </div>
         <div class="pack-items">${itemsHtml}</div>
         <div class="pack-footer">
@@ -147,22 +157,72 @@ export class UIManager {
             <div class="pack-price"><span class="pack-original">${formatPrice(full)}</span>${formatPrice(discounted)}</div>
             <span class="pack-saving">✓ Ahorras ${saved} € con este pack</span>
           </div>
-          <button class="pack-add-btn ${inCart ? 'added' : ''}" id="pbtn-${pack.id}" data-pack-id="${pack.id}">
-            ${inCart ? '✓ Añadido' : '+ Añadir'}
+          <button class="add-btn" id="pbtn-${pack.id}" data-pack-id="${pack.id}">
+            + Añadir
           </button>
         </div>
       </div>`
     }).join('')
+
+    // Botón para crear nuevo pack personalizado - solo si no existe uno
+    if (this.customPackManager) {
+      const hasCustomPack = this.customPackManager.getAllPacks().length > 0
+      if (!hasCustomPack) {
+        html += `
+        <div class="pack-card create-pack-card">
+          <button class="create-pack-btn" id="create-custom-pack">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">+</div>
+            <h3>Crea tu Pack</h3>
+            <p>Personalizado</p>
+            <p style="font-size: 0.75rem; color: var(--muted); margin-top: 0.5rem;">Elige los perfumes que quieras</p>
+          </button>
+        </div>
+        `
+      }
+    }
+
+    container.innerHTML = html
   }
 
   renderCart() {
     const container = document.getElementById('cart-items')
     const items = this.cartManager.getAllItems()
-    const total = this.cartManager.getTotal()
+    const subtotal = this.cartManager.getTotal()
     const count = this.cartManager.getCount()
+    
+    // Calcular envío: gratis si >= 25, sino €3.95
+    const freeShippingThreshold = 25
+    const shippingCost = subtotal >= freeShippingThreshold ? 0 : CONFIG.SHIPPING_COST
+    const total = subtotal + shippingCost
+    const remaining = Math.max(0, freeShippingThreshold - subtotal)
+    const progressPercent = Math.min(100, (subtotal / freeShippingThreshold) * 100)
 
     document.getElementById('cart-count').textContent = count
+    document.getElementById('cart-subtotal').textContent = formatPrice(subtotal)
+    document.getElementById('cart-shipping').textContent = shippingCost === 0 ? '¡Gratis!' : formatPrice(shippingCost)
+    document.getElementById('cart-shipping-label').textContent = shippingCost === 0 ? '✓ Envío' : 'Envío'
     document.getElementById('cart-total').textContent = formatPrice(total)
+
+    // Generar barra de progreso de envío gratis
+    let freeShippingBar = ''
+    if (subtotal < freeShippingThreshold) {
+      freeShippingBar = `
+        <div class="free-shipping-bar" style="margin-top: 1rem; padding: 1rem; background: var(--bg); border-radius: 6px;">
+          <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem;">
+            Te faltan ${formatPrice(remaining)} para conseguir envío gratis
+          </p>
+          <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;">
+            <div style="height: 100%; width: ${progressPercent}%; background: var(--accent); transition: width 0.3s ease;"></div>
+          </div>
+        </div>
+      `
+    } else {
+      freeShippingBar = `
+        <div class="free-shipping-bar" style="margin-top: 1rem; padding: 1rem; background: #e8f5e9; border-radius: 6px; text-align: center;">
+          <p style="font-size: 0.9rem; color: #2e7d32; font-weight: 500;">✓ ¡Envío gratis conseguido!</p>
+        </div>
+      `
+    }
 
     if (items.length === 0) {
       container.innerHTML = `<div class="cart-empty">
@@ -176,6 +236,7 @@ export class UIManager {
             <p class="cart-item-brand">${escapeHtml(item.brand)}</p>
             <p class="cart-item-name">${escapeHtml(item.name)}</p>
             <p class="cart-item-meta">${item.isPack ? 'Pack' : item.size + ' ml'} · ${formatPrice(item.price)} / ud.</p>
+            ${item.packDetails ? `<p class="cart-item-details" style="font-size: 0.85rem; color: var(--muted); margin: 0.5rem 0 0.5rem 0; line-height: 1.4;">${escapeHtml(item.packDetails)}</p>` : ''}
             <div class="cart-item-controls">
               <button class="qty-btn" data-key="${item.key}" data-action="minus">−</button>
               <span class="qty-val">${item.qty}</span>
@@ -186,6 +247,7 @@ export class UIManager {
           <span class="cart-item-price">${formatPrice(item.price * item.qty)}</span>
         </div>`
       ).join('')
+      container.innerHTML += freeShippingBar
     }
 
     this.updateWhatsAppLink()
@@ -236,4 +298,135 @@ export class UIManager {
     panel.classList.toggle('open')
     overlay.classList.toggle('open')
   }
+
+  renderBenefits(benefitsManager) {
+    const container = document.getElementById('benefits-container')
+    const benefits = benefitsManager.getBenefits()
+
+    container.innerHTML = benefits.map(benefit => `
+      <div class="benefit-card">
+        <div class="benefit-icon">${benefit.icon}</div>
+        <h3 class="benefit-title">${escapeHtml(benefit.title)}</h3>
+        <p class="benefit-desc">${escapeHtml(benefit.description)}</p>
+      </div>
+    `).join('')
+  }
+
+  renderSocials() {
+    const container = document.getElementById('footer-socials')
+    if (!container) return
+
+    const instagramUrl = 'https://www.instagram.com/anotherleveldecants?igsh=NnE5dW1wYWZzaDZp&utm_source=ig_contact_invite'
+    const tiktokUrl = 'https://www.tiktok.com/@anotherleveldecan?_r=1&_t=ZN-9649KGfx2v8'
+    const youtubeUrl = 'https://www.youtube.com/@anotherleveldecants?si=kRbl6exjxzkK7fqh'
+    const facebookUrl = 'https://www.facebook.com/profile.php?id=61589278741557'
+    const whatsappUrl = 'https://whatsapp.com/channel/0029Vb7n5uOEgGfVvQeuYo21'
+
+    container.innerHTML = `
+      <div class="social-links">
+        <a href="${escapeHtml(instagramUrl)}" target="_blank" rel="noopener noreferrer" title="Instagram" class="social-link social-instagram">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1 1 12.324 0 6.162 6.162 0 0 1-12.324 0zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm4.965-10.322a1.44 1.44 0 1 1 2.881.001 1.44 1.44 0 0 1-2.881-.001z"/>
+          </svg>
+        </a>
+        <a href="${escapeHtml(tiktokUrl)}" target="_blank" rel="noopener noreferrer" title="TikTok" class="social-link social-tiktok">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.68v13.67a2.4 2.4 0 1 1-2.4-2.4c.67 0 1.29.15 1.84.38V9.1A7.7 7.7 0 0 0 8.75 9c-4.72 0-8.59 3.84-8.59 8.57s3.87 8.59 8.59 8.59c4.71 0 8.58-3.84 8.58-8.59v-5.93c1.86 1.39 4.40 2.25 7.12 2.25v-3.72a8.95 8.95 0 0 1-3.61-.88z"/>
+          </svg>
+        </a>
+        <a href="${escapeHtml(youtubeUrl)}" target="_blank" rel="noopener noreferrer" title="YouTube" class="social-link social-youtube">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+        <a href="${escapeHtml(facebookUrl)}" target="_blank" rel="noopener noreferrer" title="Facebook" class="social-link social-facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </a>
+        <a href="${escapeHtml(whatsappUrl)}" target="_blank" rel="noopener noreferrer" title="WhatsApp" class="social-link social-whatsapp">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+            <path d="M17.672 13.259c-.247-.124-1.462-.723-1.686-.805-.224-.082-.387-.124-.55.124-.163.248-.635.805-.778.968-.143.163-.287.184-.534.06-.247-.123-1.044-.385-1.988-1.226-.735-.655-1.232-1.462-1.375-1.71-.143-.248-.015-.382.107-.505.11-.11.247-.286.371-.429.123-.143.164-.247.247-.41.082-.164.041-.308-.041-.431-.082-.124-.55-1.327-.753-1.82-.198-.46-.399-.398-.55-.405-.142-.007-.305-.007-.468-.007-.163 0-.428.061-.652.305-.223.245-.853.833-.853 2.032 0 1.199.875 2.356 1.997 3.267 1.122.91 2.633 1.436 4.111 1.436 1.478 0 2.356-.875 2.715-1.72.247-.602.247-1.226.164-1.345-.082-.123-.305-.196-.55-.32z"/>
+            <path d="M12 0C5.383 0 0 5.383 0 12c0 2.136.694 4.147 1.876 5.808L.592 23.408 6.362 21.565A11.955 11.955 0 0 0 12 24c6.617 0 12-5.383 12-12S18.617 0 12 0zm7.89 18.338c-.897 2.511-3.704 3.662-6.538 2.764-1.346-.44-2.577-1.224-3.561-2.187-.987-.963-1.771-2.195-2.211-3.541-.898-2.834-1.747-5.668-2.646-8.502-.439-1.346-.44-2.577 0-3.561.44-1.346 1.224-2.577 2.187-3.561.963-.987 2.195-1.771 3.541-2.211 2.834-.898 5.668-.748 8.502.15 1.346.439 2.577.44 3.561 0 1.346-.44 2.577-1.224 3.561-2.187.987-.963 1.771-2.195 2.211-3.541.898-2.834.748-5.668-.15-8.502z"/>
+          </svg>
+        </a>
+      </div>
+    `
+  }
+
+  renderCustomPackModal(editPackId = null) {
+    const editPack = editPackId ? this.customPackManager.getPack(editPackId) : null
+    const allPerfumes = this.productManager.perfumes.filter(p => p.inStock)
+
+    const perfumeOptions = allPerfumes.map(p => `
+      <option value="${p.id}" data-brand="${escapeHtml(p.brand)}" data-name="${escapeHtml(p.name)}">
+        ${escapeHtml(p.brand)} - ${escapeHtml(p.name)}
+      </option>
+    `).join('')
+
+    const modal = document.createElement('div')
+    modal.id = 'custom-pack-modal'
+    modal.className = 'modal-overlay-custom'
+    modal.innerHTML = `
+      <div class="modal-custom-content">
+        <div class="modal-custom-header">
+          <h2>${editPack ? 'Editar Pack Personalizado' : 'Crear Pack Personalizado'}</h2>
+          <button class="modal-custom-close" id="close-custom-pack-modal">✕</button>
+        </div>
+
+        <div class="modal-custom-body">
+          <p class="modal-custom-info">Selecciona los perfumes que deseas incluir en tu pack (mínimo 25 ml)</p>
+
+          <div id="selected-items" class="selected-items-list">
+            ${editPack ? editPack.items.map((item, i) => {
+              const perf = this.productManager.getPerfumeById(item.perfId)
+              return perf ? `
+                <div class="selected-item" data-index="${i}">
+                  <span>${escapeHtml(perf.brand)} - ${escapeHtml(perf.name)} · ${item.size}ml</span>
+                  <button type="button" class="remove-item-btn" data-index="${i}">✕</button>
+                </div>
+              ` : ''
+            }).join('') : ''}
+          </div>
+
+          <div class="add-perfume-section">
+            <label>Agregar perfume:</label>
+            <select id="perfume-select">
+              <option value="">Elige un perfume...</option>
+              ${perfumeOptions}
+            </select>
+
+            <div class="size-selector">
+              <label>Tamaño:</label>
+              <div class="size-buttons">
+                <button type="button" class="size-btn" data-size="5">5 ml</button>
+                <button type="button" class="size-btn" data-size="10">10 ml</button>
+              </div>
+            </div>
+
+            <button type="button" id="add-perfume-btn" class="add-perfume-btn">+ Agregar perfume</button>
+          </div>
+
+          <div class="ml-counter">
+            <strong>Total: <span id="total-ml">0</span> ml</strong>
+            <span id="ml-warning" style="color: var(--muted); font-size: 0.8rem; display: none;">Mínimo 25 ml requerido</span>
+          </div>
+
+          <div id="price-display" style="padding: 1rem; background: var(--bg); border-radius: 6px; text-align: right; border: 1px solid var(--border);">
+            <div style="font-size: 0.8rem; color: var(--muted);">Precio total del pack:</div>
+            <div style="font-size: 1rem; color: var(--muted); margin-top: 0.3rem;">---</div>
+          </div>
+        </div>
+
+        <div class="modal-custom-footer">
+          <button type="button" class="btn-cancel" id="cancel-custom-pack">Cancelar</button>
+          <button type="button" class="btn-create" id="save-custom-pack">${editPack ? 'Actualizar Pack' : 'Crear Pack'}</button>
+        </div>
+      </div>
+    `
+
+    document.body.appendChild(modal)
+    return modal
+  }
 }
+

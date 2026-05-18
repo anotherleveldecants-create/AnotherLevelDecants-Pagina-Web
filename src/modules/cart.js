@@ -1,3 +1,5 @@
+import { CONFIG } from '../config.js'
+
 export class CartManager {
   constructor() {
     this.items = new Map()
@@ -47,12 +49,19 @@ export class CartManager {
       })
     }
     this.saveToStorage()
+    // Emitir evento personalizado para actualizar la UI
+    window.dispatchEvent(new CustomEvent('cartUpdated'))
   }
 
-  addPack(pack, packPrice, quantity = 1) {
+  addPack(pack, packPrice, productManager, quantity = 1) {
     const key = `pack-${pack.id}`
-    const summary = pack.items
-      .map(item => `Item ${item.perfId} ${item.size}ml`)
+    
+    // Generar descripción detallada del pack con nombres de perfumes
+    const packDetails = pack.items
+      .map(item => {
+        const perfume = productManager.getPerfumeById(item.perfId)
+        return perfume ? `${perfume.name} (${item.size}ml)` : `Perfume ${item.perfId} (${item.size}ml)`
+      })
       .join(', ')
 
     if (this.items.has(key)) {
@@ -68,15 +77,19 @@ export class CartManager {
         price: packPrice,
         qty: quantity,
         isPack: true,
-        summary
+        packDetails
       })
     }
     this.saveToStorage()
+    // Emitir evento personalizado para actualizar la UI
+    window.dispatchEvent(new CustomEvent('cartUpdated'))
   }
 
   removeItem(key) {
     this.items.delete(key)
     this.saveToStorage()
+    // Emitir evento personalizado para actualizar la UI
+    window.dispatchEvent(new CustomEvent('cartUpdated'))
   }
 
   changeQuantity(key, delta) {
@@ -88,6 +101,8 @@ export class CartManager {
       }
     }
     this.saveToStorage()
+    // Emitir evento personalizado para actualizar la UI
+    window.dispatchEvent(new CustomEvent('cartUpdated'))
   }
 
   getTotal() {
@@ -121,15 +136,29 @@ export class CartManager {
 
   getCheckoutMessage(productManager) {
     const items = this.getAllItems()
-    const total = this.getTotal()
+    const subtotal = this.getTotal()
+    const shipping = subtotal >= 25 ? 0 : CONFIG.SHIPPING_COST
+    const total = subtotal + shipping
 
     const lines = items.map(item => {
       const label = item.isPack
         ? `📦 Pack: ${item.name}`
         : `• ${item.name} (${item.brand}) ${item.size}ml`
-      return `${label} x${item.qty} = ${(item.price * item.qty).toFixed(2).replace('.', ',')} €`
+      
+      let line = `${label} x${item.qty} = ${(item.price * item.qty).toFixed(2).replace('.', ',')} €`
+      
+      // Agregar detalles del pack si existe packDetails
+      if (item.packDetails) {
+        line += `\n   Contenido: ${item.packDetails}`
+      }
+      
+      return line
     }).join('\n')
 
-    return `¡Hola! Me gustaría hacer el siguiente pedido en AnotherLevelDecants 🌿\n\n${lines}\n\n*Total: ${total.toFixed(2).replace('.', ',')} €*\n\n¿Me indicas los datos para el Bizum? ¡Gracias! 😊`
+    const shippingLine = shipping === 0 
+      ? '\n• Envío: ¡Gratis! (pedido > €25)'
+      : `\n• Envío: ${shipping.toFixed(2).replace('.', ',')} €`
+
+    return `¡Hola! Me gustaría hacer el siguiente pedido en AnotherLevelDecants 🌿\n\n${lines}${shippingLine}\n\n*Total: ${total.toFixed(2).replace('.', ',')} €*\n\n¿Me indicas los datos para el Bizum? ¡Gracias! 😊`
   }
 }

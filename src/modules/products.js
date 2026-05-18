@@ -6,6 +6,8 @@ export class ProductManager {
     this.packs = []
     this.filteredPerfumes = []
     this.currentFilter = 'todos'
+    this.currentSeasonFilter = 'todos'
+    this.currentFamilyFilter = 'todos'
     this.currentSearchTerm = ''
     this.selectedSizes = new Map()
     this.qty5mlClicks = new Map() // Contador de clicks en 5ml
@@ -32,6 +34,18 @@ export class ProductManager {
       result = result.filter(p => p.gender === this.currentFilter)
     }
 
+    if (this.currentSeasonFilter !== 'todos') {
+      result = result.filter(p => 
+        Array.isArray(p.season) 
+          ? p.season.includes(this.currentSeasonFilter)
+          : p.season === this.currentSeasonFilter
+      )
+    }
+
+    if (this.currentFamilyFilter !== 'todos') {
+      result = result.filter(p => p.family === this.currentFamilyFilter)
+    }
+
     if (this.currentSearchTerm) {
       const term = this.currentSearchTerm.toLowerCase()
       result = result.filter(p =>
@@ -46,6 +60,16 @@ export class ProductManager {
 
   setFilter(filter) {
     this.currentFilter = filter
+    this.updateFilteredList()
+  }
+
+  setSeasonFilter(season) {
+    this.currentSeasonFilter = season
+    this.updateFilteredList()
+  }
+
+  setFamilyFilter(family) {
+    this.currentFamilyFilter = family
     this.updateFilteredList()
   }
 
@@ -100,5 +124,22 @@ export class ProductManager {
   getAvailableGenders() {
     const genders = new Set(this.perfumes.filter(p => p.inStock).map(p => p.gender))
     return ['todos', ...Array.from(genders).sort()]
+  }
+
+  getAvailableSeasons() {
+    const seasons = new Set()
+    this.perfumes.filter(p => p.inStock).forEach(p => {
+      if (Array.isArray(p.season)) {
+        p.season.forEach(s => seasons.add(s))
+      } else if (p.season) {
+        seasons.add(p.season)
+      }
+    })
+    return ['todos', ...Array.from(seasons).sort()]
+  }
+
+  getAvailableFamilies() {
+    const families = new Set(this.perfumes.filter(p => p.inStock).map(p => p.family).filter(Boolean))
+    return ['todos', ...Array.from(families).sort()]
   }
 }
