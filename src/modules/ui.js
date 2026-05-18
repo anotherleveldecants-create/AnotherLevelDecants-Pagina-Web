@@ -317,7 +317,7 @@ export class UIManager {
     if (!container) return
 
     const instagramUrl = 'https://www.instagram.com/anotherleveldecants?igsh=NnE5dW1wYWZzaDZp&utm_source=ig_contact_invite'
-    const tiktokUrl = 'https://www.tiktok.com/@anotherleveldecan?_r=1&_t=ZN-9649KGfx2v8'
+    const tiktokUrl = 'https://www.tiktok.com/@anotherleveldecants?_r=1&_t=ZN-9649KGfx2v8'
     const youtubeUrl = 'https://www.youtube.com/@anotherleveldecants?si=kRbl6exjxzkK7fqh'
     const facebookUrl = 'https://www.facebook.com/profile.php?id=61589278741557'
     const whatsappUrl = 'https://whatsapp.com/channel/0029Vb7n5uOEgGfVvQeuYo21'
