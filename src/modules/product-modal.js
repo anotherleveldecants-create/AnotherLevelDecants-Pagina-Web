@@ -134,10 +134,12 @@ export class ProductModalManager {
 
   attachEventListeners(perfume) {
     const closeBtn = document.getElementById('modal-close-btn')
+    const modalOverlay = document.getElementById('modal-overlay')
     const sizeOptions = document.querySelectorAll('.size-option')
     const addBtn = document.getElementById('modal-add-to-cart')
 
     closeBtn.addEventListener('click', () => this.closeModal())
+    modalOverlay.addEventListener('click', () => this.closeModal())
 
     sizeOptions.forEach(option => {
       option.addEventListener('click', () => {
