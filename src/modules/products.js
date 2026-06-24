@@ -8,6 +8,7 @@ export class ProductManager {
     this.currentFilter = 'todos'
     this.currentSeasonFilter = 'todos'
     this.currentFamilyFilter = 'todos'
+    this.currentPriceFilter = 'todos'
     this.currentSearchTerm = ''
     this.selectedSizes = new Map()
     this.qty5mlClicks = new Map() // Contador de clicks en 5ml
@@ -46,6 +47,16 @@ export class ProductManager {
       result = result.filter(p => p.family === this.currentFamilyFilter)
     }
 
+    if (this.currentPriceFilter !== 'todos') {
+      result = result.filter(p => {
+        const price = p.price5
+        if (this.currentPriceFilter === 'bajo') return price < 5
+        if (this.currentPriceFilter === 'medio') return price >= 5 && price <= 8
+        if (this.currentPriceFilter === 'alto') return price > 8
+        return true
+      })
+    }
+
     if (this.currentSearchTerm) {
       const term = this.currentSearchTerm.toLowerCase()
       result = result.filter(p =>
@@ -70,6 +81,11 @@ export class ProductManager {
 
   setFamilyFilter(family) {
     this.currentFamilyFilter = family
+    this.updateFilteredList()
+  }
+
+  setPriceFilter(range) {
+    this.currentPriceFilter = range
     this.updateFilteredList()
   }
 
@@ -141,5 +157,17 @@ export class ProductManager {
   getAvailableFamilies() {
     const families = new Set(this.perfumes.filter(p => p.inStock).map(p => p.family).filter(Boolean))
     return ['todos', ...Array.from(families).sort()]
+  }
+
+  getAvailablePriceRanges() {
+    // Devuelve ['todos', 'bajo', 'medio', 'alto'] si hay productos en cada rango
+    const ranges = new Set(['todos'])
+    this.perfumes.filter(p => p.inStock).forEach(p => {
+      const price = p.price5
+      if (price < 5) ranges.add('bajo')
+      else if (price >= 5 && price <= 8) ranges.add('medio')
+      else if (price > 8) ranges.add('alto')
+    })
+    return Array.from(ranges)
   }
 }

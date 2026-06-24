@@ -147,7 +147,7 @@ nav a:hover {
    ═══════════════════════════════════════════════════════════════════════════════ */
 .hero {
   text-align: center;
-  padding: 5rem 2rem 3.5rem;
+  padding: 3rem 2rem 2.25rem;
   border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, #fff 0%, var(--bg) 100%);
 }
@@ -157,7 +157,7 @@ nav a:hover {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 1rem;
+  margin-bottom: 0.45rem;
   display: block;
 }
 
@@ -167,7 +167,7 @@ nav a:hover {
   font-weight: 300;
   line-height: 1.1;
   color: var(--text);
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.55rem;
 }
 
 .hero h1 em {
@@ -179,7 +179,7 @@ nav a:hover {
   color: var(--muted);
   font-size: 0.95rem;
   max-width: 480px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 0.9rem;
   line-height: 1.7;
 }
 
@@ -208,7 +208,7 @@ nav a:hover {
 
 .section-heading {
   text-align: center;
-  padding: 3rem 2rem 0.5rem;
+  padding: 1rem 2rem 1.4rem;
 }
 
 .section-heading h2 {
@@ -220,14 +220,14 @@ nav a:hover {
 .section-heading p {
   color: var(--muted);
   font-size: 0.88rem;
-  margin-top: 0.5rem;
+  margin-top: 0.2rem;
 }
 
 .section-divider {
   width: 40px;
   height: 1px;
   background: var(--accent);
-  margin: 1rem auto 0;
+  margin: 0.45rem auto 0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -458,8 +458,9 @@ nav a:hover {
 
 .card-image {
   position: absolute;
-  height: stretch;
-  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   object-position: center;
   z-index: 1;
 }
@@ -494,7 +495,7 @@ nav a:hover {
 }
 
 .card-body {
-  padding: 1rem 1.2rem;
+  padding: 0.7rem 1rem;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -505,7 +506,7 @@ nav a:hover {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.08rem;
 }
 
 .card-name {
@@ -513,7 +514,7 @@ nav a:hover {
   font-size: 1.2rem;
   font-weight: 400;
   line-height: 1.2;
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.12rem;
 }
 
 .card-desc {
@@ -521,7 +522,7 @@ nav a:hover {
   color: var(--muted);
   line-height: 1.55;
   flex: 1;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.45rem;
 }
 
 .card-desc em {
@@ -533,7 +534,7 @@ nav a:hover {
 
 .size-selector {
   display: flex;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.45rem;
   border: 1px solid var(--border);
   width: 100%;
 }
@@ -699,7 +700,7 @@ nav a:hover {
 }
 
 .card-body-simple {
-  padding: 1rem 1.2rem;
+  padding: 0.75rem 1rem;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -725,6 +726,23 @@ nav a:hover {
 .info-btn:hover {
   background: var(--accent-dark);
   transform: translateY(-2px);
+}
+
+/* Notas olfativas y precio en cards */
+.card-notes {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.4;
+  margin: 0.25rem 0 0.4rem 0;
+  min-height: 1.6rem;
+}
+
+.card-price-from {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 0.1rem 0 0.45rem 0;
 }
 
 /* Redes sociales en header */
@@ -1541,6 +1559,27 @@ nav a:hover {
   flex-shrink: 0;
 }
 
+.checkout-stripe-btn {
+  width: 100%;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  padding: 16px;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+  margin-bottom: 10px;
+}
+
+.checkout-stripe-btn:hover {
+  background: #333;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════════════════════════════════════════════ */
@@ -1633,11 +1672,11 @@ nav a:hover {
   }
 
   .hero {
-    padding: 3rem 1.2rem 2.5rem;
+    padding: 4rem 1.5rem 3rem;
   }
 
   .hero h1 {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
   }
 
   .hero-pills {
@@ -1650,37 +1689,66 @@ nav a:hover {
   }
 
   .section-heading {
-    padding: 2rem 1.2rem 0.5rem;
+    padding: 2.5rem 1.5rem 1rem;
   }
 
   .section-heading h2 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
 
   .filters {
-    padding: 1rem;
+    padding: 1.2rem;
   }
 
   .filter-btn {
-    font-size: 0.65rem;
-    padding: 0.35rem 0.8rem;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.9rem;
   }
 
   .search-bar {
-    padding: 1rem;
-    gap: 0.5rem;
+    padding: 1rem 1.2rem;
+    gap: 0.6rem;
     flex-wrap: wrap;
   }
 
   .filters-toggle-btn {
-    font-size: 0.65rem;
-    padding: 0.6rem 0.8rem;
+    font-size: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    flex: 0 0 auto;
+  }
+
+  /* Móvil: transformar texto del botón en icono 'hamburger' */
+  .filters-toggle-btn {
+    width: 48px;
+    height: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-indent: -9999px;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .filters-toggle-btn::before {
+    content: '';
+    width: 22px;
+    height: 2px;
+    background: var(--text);
+    display: block;
+    box-shadow: 0 6px 0 var(--text), 0 -6px 0 var(--text);
+  }
+
+  .filters-toggle-btn:hover::before {
+    background: var(--accent);
+    box-shadow: 0 6px 0 var(--accent), 0 -6px 0 var(--accent);
   }
 
   .search-input {
-    min-width: 100%;
-    font-size: 0.85rem;
-    flex-basis: 100%;
+    min-width: 0;
+    font-size: 0.9rem;
+    flex: 1 1 auto;
+    max-width: 9999px;
   }
 
   .filters-modal-content {
@@ -1689,25 +1757,25 @@ nav a:hover {
   }
 
   .catalog {
-    padding: 0.8rem;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    padding: 1rem 1.2rem 2rem;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
 
   .card-visual {
-    height: 120px;
+    height: 155px;
   }
 
   .card-body {
-    padding: 0.8rem 1rem;
+    padding: 1rem;
   }
 
   .card-name {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 
   .card-price {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
 
   .pagination {
@@ -1726,9 +1794,9 @@ nav a:hover {
   }
 
   .packs-grid {
-    padding: 0.8rem;
-    gap: 1rem;
-    grid-template-columns: 1fr;
+    padding: 1rem 1.2rem;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
 
   .cart-panel {
@@ -1736,9 +1804,9 @@ nav a:hover {
   }
 
   .footer-grid {
-    padding: 1.5rem 1rem;
-    gap: 1.5rem;
-    grid-template-columns: 1fr;
+    padding: 2rem 1.5rem 1rem;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
 
   .footer-divider {
@@ -1780,15 +1848,15 @@ nav a:hover {
 
 .modal-content {
   background: var(--surface);
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 600px;
+  border-radius: 10px;
+  padding: 1.2rem;
+  max-width: 520px;
   width: 90%;
   position: relative;
   z-index: 2;
   box-shadow: var(--shadow-lg);
   animation: modalSlideIn 0.3s ease;
-  max-height: 90vh;
+  max-height: 85vh;
   overflow-y: auto;
 }
 
@@ -1822,7 +1890,7 @@ nav a:hover {
 .modal-body {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .modal-image {
@@ -1831,12 +1899,12 @@ nav a:hover {
   justify-content: center;
   background: var(--bg);
   border-radius: 8px;
-  min-height: 300px;
+  min-height: 220px;
 }
 
 .modal-image img {
   max-width: 100%;
-  max-height: 300px;
+  max-height: 200px;
   object-fit: contain;
 }
 
@@ -1850,8 +1918,8 @@ nav a:hover {
 
 .modal-name {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  margin-bottom: 0.6rem;
 }
 
 .modal-badge {
@@ -1894,9 +1962,9 @@ nav a:hover {
 }
 
 .modal-notes p {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  margin-bottom: 0.5rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin-bottom: 0.4rem;
 }
 
 .modal-notes em {
@@ -1917,7 +1985,7 @@ nav a:hover {
 }
 
 .size-option {
-  padding: 1rem;
+  padding: 0.75rem;
   border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
@@ -1943,8 +2011,8 @@ nav a:hover {
 
 .size-price {
   display: block;
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
 }
 
 .size-save {
@@ -1960,27 +2028,27 @@ nav a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 1.1rem;
-  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
 }
 
 .modal-current-price .price {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 500;
   color: var(--accent);
 }
 
 .modal-add-btn {
   width: 100%;
-  padding: 0.8rem;
+  padding: 0.65rem;
   background: var(--text);
   color: white;
   border: none;
   border-radius: 6px;
   font-family: 'Jost', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -2125,12 +2193,18 @@ nav a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   text-decoration: none;
   transition: all 0.3s ease;
   color: #fff;
+}
+
+.social-link img {
+  width: 28px;
+  height: 28px;
+  display: block;
 }
 
 /* Colores específicos para cada red */
@@ -2175,13 +2249,212 @@ nav a:hover {
 }
 
 .social-whatsapp {
-  background: #25D366;
+  background: #ffffff;
+  border: 2px solid #25D366;
+  padding: 4px; /* dejar espacio alrededor del icono */
+}
+
+.social-whatsapp img {
+  width: 30px;
+  height: 30px;
 }
 
 .social-whatsapp:hover {
-  background: #20ba58;
+  background: #ffffff;
   transform: translateY(-3px);
-  box-shadow: 0 8px 15px rgba(37, 211, 102, 0.3);
+  box-shadow: 0 8px 15px rgba(37, 211, 102, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BANNER DE CAPTURA DE EMAILS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.email-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem 2rem;
+  animation: slideUpBanner 0.4s ease;
+}
+
+@keyframes slideUpBanner {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.email-banner.hidden {
+  display: none;
+}
+
+.email-banner-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  position: relative;
+}
+
+.email-banner-text {
+  flex: 1;
+  min-width: 200px;
+}
+
+.email-banner-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--text);
+  margin: 0;
+  margin-bottom: 0.25rem;
+}
+
+.email-banner-title strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.email-banner-subtitle {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.email-banner-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 250px;
+}
+
+.email-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text);
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.email-input::placeholder {
+  color: var(--muted);
+}
+
+.email-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 2px rgba(201, 169, 110, 0.1);
+}
+
+.email-submit-btn {
+  padding: 0.65rem 1.2rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.email-submit-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+.email-submit-btn:active {
+  transform: translateY(0);
+}
+
+.email-banner-close {
+  position: absolute;
+  top: -8px;
+  right: 0;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.email-banner-close:hover {
+  color: var(--text);
+}
+
+/* Responsive para email banner */
+@media (max-width: 900px) {
+  .email-banner-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .email-banner-form {
+    width: 100%;
+  }
+
+  .email-submit-btn {
+    width: 100%;
+  }
+
+  .email-banner-close {
+    position: static;
+    align-self: flex-start;
+    margin-bottom: -0.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .email-banner {
+    padding: 1rem;
+  }
+
+  .email-banner-title {
+    font-size: 0.95rem;
+  }
+
+  .email-banner-subtitle {
+    font-size: 0.7rem;
+  }
+
+  .email-input {
+    min-width: 120px;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .email-submit-btn {
+    padding: 0.55rem 1rem;
+    font-size: 0.7rem;
+  }
 }
 
 /* MEDIA QUERIES PARA NUEVOS COMPONENTES */

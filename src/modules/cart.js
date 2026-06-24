@@ -134,31 +134,39 @@ export class CartManager {
     this.saveToStorage()
   }
 
-  getCheckoutMessage(productManager) {
+  async checkout(coupon = null) {
     const items = this.getAllItems()
-    const subtotal = this.getTotal()
-    const shipping = subtotal >= 25 ? 0 : CONFIG.SHIPPING_COST
-    const total = subtotal + shipping
 
-    const lines = items.map(item => {
-      const label = item.isPack
-        ? `📦 Pack: ${item.name}`
-        : `• ${item.name} (${item.brand}) ${item.size}ml`
+    if (items.length === 0) return
+
+    // En desarrollo local, redirigir a página de confirmación
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      // Guardar los datos del carrito en sessionStorage para la página de confirmación
+      sessionStorage.setItem('checkoutItems', JSON.stringify(items))
+      sessionStorage.setItem('checkoutCoupon', coupon || '')
       
-      let line = `${label} x${item.qty} = ${(item.price * item.qty).toFixed(2).replace('.', ',')} €`
-      
-      // Agregar detalles del pack si existe packDetails
-      if (item.packDetails) {
-        line += `\n   Contenido: ${item.packDetails}`
+      // Redirigir a la página de confirmación
+      window.location.href = '/confirmacion.html?dev=true'
+      return
+    }
+
+    try {
+      const response = await fetch('/.netlify/functions/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, coupon }),
+      })
+
+      const data = await response.json()
+
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        alert('Ha ocurrido un error al iniciar el pago. Inténtalo de nuevo.')
       }
-      
-      return line
-    }).join('\n')
-
-    const shippingLine = shipping === 0 
-      ? '\n• Envío: ¡Gratis! (pedido > €25)'
-      : `\n• Envío: ${shipping.toFixed(2).replace('.', ',')} €`
-
-    return `¡Hola! Me gustaría hacer el siguiente pedido en AnotherLevelDecants 🌿\n\n${lines}${shippingLine}\n\n*Total: ${total.toFixed(2).replace('.', ',')} €*\n\n¿Me indicas los datos para el Bizum? ¡Gracias! 😊`
+    } catch (err) {
+      console.error(err)
+      alert('Ha ocurrido un error al conectar con el servidor de pagos.')
+    }
   }
 }

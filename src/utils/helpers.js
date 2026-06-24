@@ -12,7 +12,10 @@ export function escapeHtml(text) {
 
 // Formater precios
 export function formatPrice(price) {
-  return price.toFixed(2).replace('.', ',') + ' €'
+  if (price === undefined || price === null || isNaN(price)) {
+    return '0,00 €'
+  }
+  return parseFloat(price).toFixed(2).replace('.', ',') + ' €'
 }
 
 // Hacer fetch de datos

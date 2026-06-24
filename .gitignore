@@ -12,3 +12,6 @@ yarn-debug.log*
 *.swp
 *.swo
 *~
+
+# Local Netlify folder
+.netlify

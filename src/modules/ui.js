@@ -56,6 +56,26 @@ export class UIManager {
     }).join('')
   }
 
+  renderPriceFilters() {
+    const container = document.getElementById('price-filters')
+    const ranges = this.productManager.getAvailablePriceRanges()
+    
+    const priceLabels = {
+      'todos': 'Todos',
+      'bajo': 'Menos de 5€',
+      'medio': '5€ - 8€',
+      'alto': 'Más de 8€'
+    }
+
+    container.innerHTML = ranges.map(range => {
+      const isActive = range === this.productManager.currentPriceFilter
+      const label = priceLabels[range]
+      return `<button class="filter-btn ${isActive ? 'active' : ''}" 
+              data-price="${range}" 
+              aria-label="Filtrar por precio ${label}">${label}</button>`
+    }).join('')
+  }
+
   renderCatalog(page = 1) {
     const container = document.getElementById('catalog-grid')
     const { items, total, totalPages } = this.productManager.getPaginatedPerfumes(page, CONFIG.ITEMS_PER_PAGE)
@@ -68,6 +88,10 @@ export class UIManager {
       </div>`
     } else {
       container.innerHTML = items.map((p, i) => {
+        // Extraer primeras 2-3 notas del desc
+        const descNotes = p.desc.split(',').slice(0, 3).map(note => note.trim()).join(' · ')
+        const minPrice = formatPrice(p.price5)
+        
         return `
         <div class="card card-simple" data-perf-id="${p.id}" style="animation-delay:${i * 0.05}s; cursor: pointer;">
           <div class="card-visual">
@@ -77,7 +101,9 @@ export class UIManager {
           <div class="card-body card-body-simple">
             <p class="card-brand">${escapeHtml(p.brand)}</p>
             <h3 class="card-name">${escapeHtml(p.name)}</h3>
-            <button class="info-btn" id="info-${p.id}" data-perf-id="${p.id}"> Ver Precios</button>
+            <p class="card-notes">${escapeHtml(descNotes)}</p>
+            <p class="card-price-from">Desde ${minPrice}</p>
+            <button class="info-btn" id="info-${p.id}" data-perf-id="${p.id}">Ver Precios</button>
           </div>
         </div>`
       }).join('')
@@ -193,19 +219,30 @@ export class UIManager {
     // Calcular envío: gratis si >= 25, sino €3.95
     const freeShippingThreshold = 25
     const shippingCost = subtotal >= freeShippingThreshold ? 0 : CONFIG.SHIPPING_COST
-    const total = subtotal + shippingCost
+    const total = items.length === 0 ? 0 : subtotal + shippingCost
     const remaining = Math.max(0, freeShippingThreshold - subtotal)
     const progressPercent = Math.min(100, (subtotal / freeShippingThreshold) * 100)
 
     document.getElementById('cart-count').textContent = count
     document.getElementById('cart-subtotal').textContent = formatPrice(subtotal)
-    document.getElementById('cart-shipping').textContent = shippingCost === 0 ? '¡Gratis!' : formatPrice(shippingCost)
-    document.getElementById('cart-shipping-label').textContent = shippingCost === 0 ? '✓ Envío' : 'Envío'
+    
+    // Mostrar/ocultar fila de envío según si hay items
+    const shippingRow = document.getElementById('shipping-row')
+    if (items.length === 0) {
+      shippingRow.style.display = 'none'
+      document.getElementById('cart-shipping').textContent = '0,00 €'
+      document.getElementById('cart-shipping-label').textContent = 'Envío'
+    } else {
+      shippingRow.style.display = 'flex'
+      document.getElementById('cart-shipping').textContent = shippingCost === 0 ? '¡Gratis!' : formatPrice(shippingCost)
+      document.getElementById('cart-shipping-label').textContent = shippingCost === 0 ? '✓ Envío' : 'Envío'
+    }
+    
     document.getElementById('cart-total').textContent = formatPrice(total)
 
     // Generar barra de progreso de envío gratis
     let freeShippingBar = ''
-    if (subtotal < freeShippingThreshold) {
+    if (subtotal < freeShippingThreshold && items.length > 0) {
       freeShippingBar = `
         <div class="free-shipping-bar" style="margin-top: 1rem; padding: 1rem; background: var(--bg); border-radius: 6px;">
           <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem;">
@@ -216,7 +253,7 @@ export class UIManager {
           </div>
         </div>
       `
-    } else {
+    } else if (subtotal >= freeShippingThreshold && items.length > 0) {
       freeShippingBar = `
         <div class="free-shipping-bar" style="margin-top: 1rem; padding: 1rem; background: #e8f5e9; border-radius: 6px; text-align: center;">
           <p style="font-size: 0.9rem; color: #2e7d32; font-weight: 500;">✓ ¡Envío gratis conseguido!</p>
@@ -249,19 +286,6 @@ export class UIManager {
       ).join('')
       container.innerHTML += freeShippingBar
     }
-
-    this.updateWhatsAppLink()
-  }
-
-  updateWhatsAppLink() {
-    const btn = document.getElementById('whatsapp-btn')
-    if (this.cartManager.isEmpty()) {
-      btn.setAttribute('href', '#')
-      return
-    }
-
-    const msg = this.cartManager.getCheckoutMessage(this.productManager)
-    btn.setAttribute('href', `https://wa.me/${CONFIG.WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`)
   }
 
   updateSearchResults(count) {
@@ -330,9 +354,7 @@ export class UIManager {
           </svg>
         </a>
         <a href="${escapeHtml(tiktokUrl)}" target="_blank" rel="noopener noreferrer" title="TikTok" class="social-link social-tiktok">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.68v13.67a2.4 2.4 0 1 1-2.4-2.4c.67 0 1.29.15 1.84.38V9.1A7.7 7.7 0 0 0 8.75 9c-4.72 0-8.59 3.84-8.59 8.57s3.87 8.59 8.59 8.59c4.71 0 8.58-3.84 8.58-8.59v-5.93c1.86 1.39 4.40 2.25 7.12 2.25v-3.72a8.95 8.95 0 0 1-3.61-.88z"/>
-          </svg>
+          <img src="/images/logo/logo-tiktok.webp" alt="TikTok" width="24" height="24" />
         </a>
         <a href="${escapeHtml(youtubeUrl)}" target="_blank" rel="noopener noreferrer" title="YouTube" class="social-link social-youtube">
           <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
@@ -345,10 +367,7 @@ export class UIManager {
           </svg>
         </a>
         <a href="${escapeHtml(whatsappUrl)}" target="_blank" rel="noopener noreferrer" title="WhatsApp" class="social-link social-whatsapp">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-            <path d="M17.672 13.259c-.247-.124-1.462-.723-1.686-.805-.224-.082-.387-.124-.55.124-.163.248-.635.805-.778.968-.143.163-.287.184-.534.06-.247-.123-1.044-.385-1.988-1.226-.735-.655-1.232-1.462-1.375-1.71-.143-.248-.015-.382.107-.505.11-.11.247-.286.371-.429.123-.143.164-.247.247-.41.082-.164.041-.308-.041-.431-.082-.124-.55-1.327-.753-1.82-.198-.46-.399-.398-.55-.405-.142-.007-.305-.007-.468-.007-.163 0-.428.061-.652.305-.223.245-.853.833-.853 2.032 0 1.199.875 2.356 1.997 3.267 1.122.91 2.633 1.436 4.111 1.436 1.478 0 2.356-.875 2.715-1.72.247-.602.247-1.226.164-1.345-.082-.123-.305-.196-.55-.32z"/>
-            <path d="M12 0C5.383 0 0 5.383 0 12c0 2.136.694 4.147 1.876 5.808L.592 23.408 6.362 21.565A11.955 11.955 0 0 0 12 24c6.617 0 12-5.383 12-12S18.617 0 12 0zm7.89 18.338c-.897 2.511-3.704 3.662-6.538 2.764-1.346-.44-2.577-1.224-3.561-2.187-.987-.963-1.771-2.195-2.211-3.541-.898-2.834-1.747-5.668-2.646-8.502-.439-1.346-.44-2.577 0-3.561.44-1.346 1.224-2.577 2.187-3.561.963-.987 2.195-1.771 3.541-2.211 2.834-.898 5.668-.748 8.502.15 1.346.439 2.577.44 3.561 0 1.346-.44 2.577-1.224 3.561-2.187.987-.963 1.771-2.195 2.211-3.541.898-2.834.748-5.668-.15-8.502z"/>
-          </svg>
+          <img src="/images/logo/logo-whatsapp.webp" alt="WhatsApp" width="24" height="24" />
         </a>
       </div>
     `

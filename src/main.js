@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Renderizar UI
   uiManager.renderFilters()
   uiManager.renderSeasonFilters()
+  uiManager.renderPriceFilters()
   uiManager.renderBenefits(benefitsManager)
   uiManager.renderSocials()
   uiManager.renderCatalog(1)
@@ -117,6 +118,18 @@ function setupEventListeners() {
     }
   })
 
+  // Filtros de precio
+  document.getElementById('price-filters').addEventListener('click', (e) => {
+    if (e.target.classList.contains('filter-btn')) {
+      const range = e.target.dataset.price
+      productManager.setPriceFilter(range)
+      uiManager.renderPriceFilters()
+      uiManager.renderCatalog(1)
+      smoothScroll('catalog-grid')
+      filtersModal.classList.remove('active')
+    }
+  })
+
   // Búsqueda
   document.getElementById('search-input').addEventListener('input', (e) => {
     productManager.setSearch(e.target.value)
@@ -151,7 +164,18 @@ function setupEventListeners() {
       const button = e.target.closest('.qty-btn')
       const addBtn = button.closest('.add-btn')
       const packId = addBtn.dataset.packId
-      const pack = productManager.getPackById(packId)
+      let pack = productManager.getPackById(packId)
+      
+      // Si no es un pack estándar, buscar en packs personalizados
+      if (!pack && customPackManager) {
+        pack = customPackManager.getPack(packId)
+      }
+      
+      if (!pack) {
+        showNotification('Pack no encontrado')
+        return
+      }
+      
       const key = `pack-${pack.id}`
       const display = addBtn.querySelector('.qty-display')
       
@@ -302,6 +326,14 @@ function setupEventListeners() {
       }
     }
   })
+
+  // Botón de checkout Stripe
+  const checkoutBtn = document.getElementById('checkout-btn')
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', () => {
+      cartManager.checkout()
+    })
+  }
 }
 
 function showNotification(message) {

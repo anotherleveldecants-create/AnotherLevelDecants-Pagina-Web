@@ -11,5 +11,8 @@
   "devDependencies": {
     "terser": "^5.47.1",
     "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "stripe": "^22.2.0"
   }
 }
