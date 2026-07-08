@@ -134,7 +134,7 @@ export class CartManager {
     this.saveToStorage()
   }
 
-  async checkout(coupon = null) {
+  async checkout() {
     const items = this.getAllItems()
 
     if (items.length === 0) return
@@ -143,7 +143,6 @@ export class CartManager {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       // Guardar los datos del carrito en sessionStorage para la página de confirmación
       sessionStorage.setItem('checkoutItems', JSON.stringify(items))
-      sessionStorage.setItem('checkoutCoupon', coupon || '')
       
       // Redirigir a la página de confirmación
       window.location.href = '/confirmacion.html?dev=true'
@@ -154,7 +153,7 @@ export class CartManager {
       const response = await fetch('/.netlify/functions/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, coupon }),
+        body: JSON.stringify({ items }),
       })
 
       const data = await response.json()

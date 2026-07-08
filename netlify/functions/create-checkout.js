@@ -7,7 +7,13 @@ exports.handler = async (event) => {
 
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
-    const { items, coupon } = JSON.parse(event.body)
+    const { items } = JSON.parse(event.body)
+
+    const orderSummary = items
+      .map(item => item.isPack
+        ? `Pack: ${item.name} x${item.qty}`
+        : `${item.name} (${item.brand}) ${item.size}ml x${item.qty}`)
+      .join(' | ')
 
     const lineItems = items.map(item => ({
       price_data: {
@@ -42,12 +48,20 @@ exports.handler = async (event) => {
       success_url: `${process.env.SITE_URL}/confirmacion.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.SITE_URL}/#catalogo`,
       locale: 'es',
-      allow_promotion_codes: true,
-    }
-
-    if (coupon) {
-      sessionConfig.discounts = [{ coupon }]
-      delete sessionConfig.allow_promotion_codes
+      metadata: {
+        order_summary: orderSummary,
+        items_count: String(items.reduce((sum, item) => sum + item.qty, 0)),
+        subtotal_eur: subtotal.toFixed(2),
+        shipping_eur: (shipping / 100).toFixed(2),
+      },
+      payment_intent_data: {
+        metadata: {
+          order_summary: orderSummary,
+          items_count: String(items.reduce((sum, item) => sum + item.qty, 0)),
+          subtotal_eur: subtotal.toFixed(2),
+          shipping_eur: (shipping / 100).toFixed(2),
+        },
+      },
     }
 
     const session = await stripe.checkout.sessions.create(sessionConfig)
