@@ -65,6 +65,14 @@ export class ProductManager {
       )
     }
 
+    // Orden fijo por precio (5ml) de mayor a menor para no depender del id del JSON.
+    result.sort((a, b) => {
+      if (a.price5 !== b.price5) return b.price5 - a.price5
+      const byBrand = a.brand.localeCompare(b.brand, 'es', { sensitivity: 'base' })
+      if (byBrand !== 0) return byBrand
+      return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+    })
+
     this.filteredPerfumes = result
     return result
   }

@@ -53,7 +53,7 @@
     "desc": "Manzana, salvia y jengibre.",
     "highlight": "Frescura azul, limpia y profesional.",
     "inStock": true,
-    "stockLevel": "high"
+    "stockLevel": "low"
   },
   {
     "id": 5,
@@ -192,6 +192,62 @@
     "image": "/images/products/14.jpg",
     "desc": "Madera de cedro, incienso y pimienta.",
     "highlight": "Clase y seriedad pura.",
+    "inStock": true,
+    "stockLevel": "high"
+  },
+  {
+    "id": 15,
+    "brand": "Al Haramain",
+    "name": "Amber Oud Gold Edition",
+    "price5": 6.99,
+    "price10": 10.99,
+    "gender": "unisex",
+    "season": ["invierno", "otoño", "primavera", "verano"],
+    "image": "/images/products/15.webp",
+    "desc": "Melón, piña y vainilla con un fondo amaderado y almizclado.",
+    "highlight": "Elegancia y sofisticación en cada nota.",
+    "inStock": true,
+    "stockLevel": "high"
+  },
+  {
+    "id": 16,
+    "brand": "Nautica",
+    "name": "Voyage",
+    "price5": 3.99,
+    "price10": 6.49,
+    "gender": "masculino",
+    "season": ["verano", "primavera"],
+    "image": "/images/products/16.webp",
+    "desc": "Manzana, lirio de los valles y almizcle.",
+    "highlight": "Frescura marina y juvenil.",
+    "inStock": true,
+    "stockLevel": "high"
+  },
+  {
+    "id": 17,
+    "brand": "Valentino",
+    "name": "Valentino Uomo Born in Roma Coral Fantasy",
+    "price5": 9.49,
+    "price10": 15.49,
+    "gender": "masculino",
+    "season": ["primavera", "verano"],
+    "image": "/images/products/17.webp",
+    "desc": "Manzana roja, lavanda y tabaco",
+    "highlight": "Frescura y dulzor en perfecta armonía.",
+    "inStock": true,
+    "stockLevel": "high"
+  },
+  {
+    "id": 18,
+    "brand": "Armani",
+    "name": "Acqua di Gio Profondo EDP",
+    "price5": 7.99,
+    "price10": 13.99,
+    "gender": "masculino",
+    "season": ["primavera", "verano"],
+    "image": "/images/products/18.webp",
+    "desc": "Notas marinas, bergamota y pachulí.",
+    "highlight": "Frescura profunda y elegante.",
     "inStock": true,
     "stockLevel": "high"
   }
