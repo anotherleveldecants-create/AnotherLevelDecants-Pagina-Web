@@ -36,6 +36,9 @@ export const handler = async (event) => {
       })
     }
 
+    // Generamos el texto detallado de los productos para enviarlo a la metadata
+    const orderSummary = items.map(i => `${i.qty}x ${i.name} (${i.size}ml)`).join('\n')
+
     const sessionConfig = {
       mode: 'payment',
       line_items: lineItems,
@@ -43,11 +46,30 @@ export const handler = async (event) => {
       cancel_url: `${process.env.SITE_URL}/#catalogo`,
       locale: 'es',
       allow_promotion_codes: true,
+      
+      // 🚚 Obliga a Stripe a pedir la dirección de envío (Configurado para España)
+      shipping_address_collection: {
+        allowed_countries: ['ES'], 
+      },
+      
+      // 📞 Obliga a Stripe a pedir el teléfono de contacto
+      phone_number_collection: {
+        enabled: true,
+      },
+
+      // 📋 Guardamos los datos clave en metadata para que los lea el Webhook
+      metadata: {
+        order_summary: orderSummary,
+        items_count: items.reduce((sum, i) => sum + i.qty, 0).toString(),
+        subtotal_eur: subtotal.toFixed(2),
+        shipping_eur: (shipping / 100).toFixed(2)
+      }
     }
 
     if (coupon) {
       sessionConfig.discounts = [{ coupon }]
       delete sessionConfig.allow_promotion_codes
+      sessionConfig.metadata.coupon_used = coupon
     }
 
     const session = await stripe.checkout.sessions.create(sessionConfig)
