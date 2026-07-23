@@ -32,7 +32,7 @@ export default defineConfig({
         const destDir = join(rootDir, 'dist')
 
         for (const entry of readdirSync(rootDir)) {
-          if (!entry.endsWith('.html')) continue
+          if (!entry.endsWith('.html') || entry === 'index.html') continue
 
           const sourcePath = join(rootDir, entry)
           if (!statSync(sourcePath).isFile()) continue
