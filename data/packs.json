@@ -3,9 +3,9 @@
     "id": "pack-night-kings",
     "tag": "★ Bestseller · Noche",
     "name": "Pack Reyes de la Noche",
-    "desc": "Tres bombas nocturnas para destacar en citas, fiestas y salidas. Dulce, potente y adictivo.",
+    "desc": "Tres bombas nocturnas para destacar en citas, fiestas y salidas.",
     "icon": "🌙",
-    "discount": 0.1,
+    "discount": 0.10,
     "inStock": true,
     "items": [
       { "perfId": 2, "size": 10 },
@@ -17,7 +17,7 @@
     "id": "pack-blue-legends",
     "tag": "✦ Top ventas · Frescos",
     "name": "Pack Blue Legends",
-    "desc": "Frescura premium y versátil para diario. Ideal para oficina, verano y uso sin fallo.",
+    "desc": "Frescura premium y versátil para diario y verano.",
     "icon": "🌊",
     "discount": 0.09,
     "inStock": true,
@@ -28,38 +28,24 @@
     ]
   },
   {
-    "id": "pack-coral-vibes",
-    "tag": "☀ Novedad · Primavera/Verano",
-    "name": "Pack Coral Vibes",
-    "desc": "El pack más alegre y sexy para días de sol: cítrico, limpio y con toque dulce moderno.",
-    "icon": "🪸",
-    "discount": 0.08,
+    "id": "pack-dark-intense",
+    "tag": "⚡ Intenso · Invierno",
+    "name": "Pack Dark Intense",
+    "desc": "Especias, maderas y carácter: para noches frías y máxima duración.",
+    "icon": "🔥",
+    "discount": 0.09,
     "inStock": true,
     "items": [
-      { "perfId": 17, "size": 10 },
-      { "perfId": 1, "size": 5 },
-      { "perfId": 7, "size": 10 }
-    ]
-  },
-  {
-    "id": "pack-arabic-gourmand",
-    "tag": "◈ Tendencia · Árabe",
-    "name": "Pack Árabe Gourmand",
-    "desc": "Selección oriental golosa y elegante para quien quiere oler distinto y dejar huella.",
-    "icon": "🕌",
-    "discount": 0.1,
-    "inStock": true,
-    "items": [
-      { "perfId": 8, "size": 10 },
-      { "perfId": 11, "size": 10 },
-      { "perfId": 15, "size": 10 }
+      { "perfId": 12, "size": 10 },
+      { "perfId": 13, "size": 10 },
+      { "perfId": 14, "size": 10 }
     ]
   },
   {
     "id": "pack-power-office",
     "tag": "◇ Diario · Oficina",
     "name": "Pack Office + Gym",
-    "desc": "Limpios, energéticos y cumplidores para trabajo, universidad y entreno.",
+    "desc": "Limpios, energéticos y cumplidores para trabajo y entrenamiento.",
     "icon": "💼",
     "discount": 0.08,
     "inStock": true,
@@ -71,34 +57,80 @@
     ]
   },
   {
-    "id": "pack-dark-intense",
-    "tag": "⚡ Intenso · Invierno",
-    "name": "Pack Dark Intense",
-    "desc": "Especias, maderas y carácter. Un combo serio para noches frías y máxima duración.",
-    "icon": "🔥",
-    "discount": 0.09,
+    "id": "pack-unisex-bestsellers",
+    "tag": "★ Lo más vendido · Unisex",
+    "name": "Pack Unisex Bestsellers",
+    "desc": "Los preferidos por quienes buscan versatilidad y carácter sin género.",
+    "icon": "🔁",
+    "discount": 0.10,
     "inStock": true,
     "items": [
-      { "perfId": 12, "size": 10 },
-      { "perfId": 13, "size": 10 },
-      { "perfId": 14, "size": 10 }
+      { "perfId": 6, "size": 10 },
+      { "perfId": 11, "size": 10 },
+      { "perfId": 15, "size": 10 }
     ]
   },
   {
-    "id": "pack-discovery-2026",
-    "tag": "🎯 Recomendado · Starter",
-    "name": "Pack Descubrimiento 2026",
-    "desc": "Seis decants de 5 ml para probar perfiles muy distintos sin gastar de más.",
+    "id": "pack-romantic-date",
+    "tag": "❤ Cita · Romance",
+    "name": "Pack Romantic Date",
+    "desc": "Selección femenina y seductora para cenas y salidas especiales.",
+    "icon": "💘",
+    "discount": 0.12,
+    "inStock": true,
+    "items": [
+      { "perfId": 21, "size": 10 },
+      { "perfId": 22, "size": 10 },
+      { "perfId": 23, "size": 5 }
+    ]
+  },
+  {
+    "id": "pack-femme-classics",
+    "tag": "✿ Clásicos · Mujer",
+    "name": "Pack Femme Classics",
+    "desc": "Tres fragancias femeninas versátiles y atemporales.",
+    "icon": "🌸",
+    "discount": 0.10,
+    "inStock": true,
+    "items": [
+      { "perfId": 21, "size": 5 },
+      { "perfId": 25, "size": 10 },
+      { "perfId": 24, "size": 5 }
+    ]
+  },
+  {
+    "id": "pack-floral-sweet",
+    "tag": "☼ Dulce · Floral",
+    "name": "Pack Floral & Sweet",
+    "desc": "Notas florales y gourmand para quienes buscan lo dulce y femenino.",
+    "icon": "🌺",
+    "discount": 0.11,
+    "inStock": true,
+    "items": [
+      { "perfId": 22, "size": 10 },
+      { "perfId": 24, "size": 10 },
+      { "perfId": 25, "size": 5 }
+    ]
+  },
+  {
+    "id": "pack-discovery-max",
+    "tag": "🔎 Pack descubrimiento · Completo",
+    "name": "Pack Descubrimiento Max",
+    "desc": "Caja con diez decants de 5 ml para explorar una amplia variedad de perfiles.",
     "icon": "🧭",
-    "discount": 0.08,
+    "discount": 0.12,
     "inStock": true,
     "items": [
       { "perfId": 1, "size": 5 },
       { "perfId": 6, "size": 5 },
       { "perfId": 9, "size": 5 },
       { "perfId": 11, "size": 5 },
+      { "perfId": 12, "size": 5 },
       { "perfId": 17, "size": 5 },
-      { "perfId": 18, "size": 5 }
+      { "perfId": 18, "size": 5 },
+      { "perfId": 21, "size": 5 },
+      { "perfId": 24, "size": 5 },
+      { "perfId": 19, "size": 5 }
     ]
   }
 ]
